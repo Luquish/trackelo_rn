@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { YStack, XStack, Input, Text, Button, PortalProvider } from 'tamagui';
+import { YStack, XStack, Input, Text, Button } from 'tamagui';
+import { PortalProvider } from '@tamagui/portal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
