@@ -1,6 +1,7 @@
 import { ScrollView, YStack } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import Animated, { SlideInRight } from 'react-native-reanimated';
 import FloatingActionButton from '../../components/FloatingActionButton';
 import BalanceCard from '../../components/cards/BalanceCard';
@@ -26,6 +27,7 @@ const formatCurrency = (amount: number): string => {
 };
 
 export default function BalanceScreen() {
+  const router = useRouter();
   // Estado para controlar la visibilidad de los valores
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
@@ -112,8 +114,19 @@ export default function BalanceScreen() {
 
   // Función para manejar las acciones del FAB
   const handleFabAction = (type: 'expense' | 'investment' | 'income') => {
-    // TODO: Aquí irá la navegación a la pantalla correspondiente
-    console.log(`Acción seleccionada: ${type}`);
+    switch (type) {
+      case 'income':
+        router.push('/add-income');
+        break;
+      case 'expense':
+        router.push('/add-expense');
+        break;
+      case 'investment':
+        router.push('/add-investment');
+        break;
+      default:
+        console.log(`Tipo de acción no reconocido: ${type}`);
+    }
   };
 
   return (

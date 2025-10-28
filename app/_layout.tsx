@@ -28,6 +28,36 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen 
+            name="add-income" 
+            options={{ 
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Agregar Ingreso',
+              headerStyle: { backgroundColor: '#1a1a1a' },
+              headerTintColor: '#ffffff'
+            }} 
+          />
+          <Stack.Screen 
+            name="add-expense" 
+            options={{ 
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Agregar Gasto',
+              headerStyle: { backgroundColor: '#1a1a1a' },
+              headerTintColor: '#ffffff'
+            }} 
+          />
+          <Stack.Screen 
+            name="add-investment" 
+            options={{ 
+              presentation: 'modal',
+              headerShown: true,
+              title: 'Agregar Inversión',
+              headerStyle: { backgroundColor: '#1a1a1a' },
+              headerTintColor: '#ffffff'
+            }} 
+          />
         </Stack>
       </TamaguiProvider>
     </QueryClientProvider>
