@@ -6,19 +6,29 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#667eea',
+        tabBarInactiveTintColor: '#666666',
         headerShown: true,
+        headerStyle: {
+          backgroundColor: '#1a1a1a',
+        },
+        headerTintColor: '#ffffff',
         tabBarStyle: Platform.select({
           ios: {
-            backgroundColor: 'white',
+            backgroundColor: '#1a1a1a',
+            borderTopColor: '#2a2a2a',
+            borderTopWidth: 1,
           },
           android: {
-            backgroundColor: 'white',
+            backgroundColor: '#1a1a1a',
             elevation: 8,
+            borderTopColor: '#2a2a2a',
+            borderTopWidth: 1,
           },
           default: {
-            backgroundColor: 'white',
+            backgroundColor: '#1a1a1a',
+            borderTopColor: '#2a2a2a',
+            borderTopWidth: 1,
           },
         }),
       }}
@@ -26,18 +36,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Inicio',
+          title: 'Balance',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <Ionicons name="wallet" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="datos"
         options={{
-          title: 'Explorar',
+          title: 'Datos',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="compass" size={size} color={color} />
+            <Ionicons name="bar-chart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="inversiones"
+        options={{
+          title: 'Inversiones',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="trending-up" size={size} color={color} />
           ),
         }}
       />

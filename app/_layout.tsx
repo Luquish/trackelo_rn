@@ -19,9 +19,14 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TamaguiProvider config={config}>
-        <StatusBar style="auto" />
-        <Stack screenOptions={{ headerShown: false }}>
+      <TamaguiProvider config={config} defaultTheme="dark">
+        <StatusBar style="light" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: '#0f0f0f' }
+          }}
+        >
           <Stack.Screen name="(tabs)" />
         </Stack>
       </TamaguiProvider>
