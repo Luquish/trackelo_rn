@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { TamaguiProvider, createTamagui } from 'tamagui';
+import { PortalProvider } from '@tamagui/portal';
 import { defaultConfig } from '@tamagui/config/v4';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -20,45 +21,47 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <TamaguiProvider config={config} defaultTheme="dark">
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: '#0f0f0f' }
-          }}
-        >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen 
-            name="add-income" 
-            options={{ 
-              presentation: 'modal',
-              headerShown: true,
-              title: 'Agregar Ingreso',
-              headerStyle: { backgroundColor: '#1a1a1a' },
-              headerTintColor: '#ffffff'
-            }} 
-          />
-          <Stack.Screen 
-            name="add-expense" 
-            options={{ 
-              presentation: 'modal',
-              headerShown: true,
-              title: 'Agregar Gasto',
-              headerStyle: { backgroundColor: '#1a1a1a' },
-              headerTintColor: '#ffffff'
-            }} 
-          />
-          <Stack.Screen 
-            name="add-investment" 
-            options={{ 
-              presentation: 'modal',
-              headerShown: true,
-              title: 'Agregar Inversión',
-              headerStyle: { backgroundColor: '#1a1a1a' },
-              headerTintColor: '#ffffff'
-            }} 
-          />
-        </Stack>
+        <PortalProvider shouldAddRootHost>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: '#0f0f0f' }
+            }}
+          >
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="add-income"
+              options={{
+                presentation: 'modal',
+                headerShown: true,
+                title: 'Agregar Ingreso',
+                headerStyle: { backgroundColor: '#1a1a1a' },
+                headerTintColor: '#ffffff'
+              }}
+            />
+            <Stack.Screen
+              name="add-expense"
+              options={{
+                presentation: 'modal',
+                headerShown: true,
+                title: 'Agregar Gasto',
+                headerStyle: { backgroundColor: '#1a1a1a' },
+                headerTintColor: '#ffffff'
+              }}
+            />
+            <Stack.Screen
+              name="add-investment"
+              options={{
+                presentation: 'modal',
+                headerShown: true,
+                title: 'Agregar Inversión',
+                headerStyle: { backgroundColor: '#1a1a1a' },
+                headerTintColor: '#ffffff'
+              }}
+            />
+          </Stack>
+        </PortalProvider>
       </TamaguiProvider>
     </QueryClientProvider>
   );
