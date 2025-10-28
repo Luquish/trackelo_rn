@@ -169,7 +169,7 @@ export function AmountInput({
           />
         </XStack>
 
-        {/* Línea divisoria animada - 20% del ancho de pantalla, centrada */}
+        {/* Línea divisoria animada centrada */}
         <Animated.View
           style={[
             {
