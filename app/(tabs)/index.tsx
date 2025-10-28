@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import FloatingActionButton from '../../components/FloatingActionButton';
 
 // Tipo para datos financieros
 interface BalanceData {
@@ -45,6 +46,12 @@ export default function BalanceScreen() {
       return formatCurrency(amount);
     }
     return '$ ••••••';
+  };
+
+  // Función para manejar las acciones del FAB
+  const handleFabAction = (type: 'expense' | 'investment' | 'income') => {
+    // TODO: Aquí irá la navegación a la pantalla correspondiente
+    console.log(`Acción seleccionada: ${type}`);
   };
 
   return (
@@ -236,6 +243,9 @@ export default function BalanceScreen() {
 
         </YStack>
       </ScrollView>
+
+      {/* FAB - Floating Action Button */}
+      <FloatingActionButton onActionPress={handleFabAction} />
     </SafeAreaView>
   );
 }
