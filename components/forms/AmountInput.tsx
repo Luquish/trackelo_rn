@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { YStack, XStack, Input, Text, Sheet, Button, ScrollView } from 'tamagui';
+import { Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +28,9 @@ export function AmountInput({
 }: AmountInputProps) {
   const isFocused = useSharedValue(0);
   const [open, setOpen] = useState(false);
+  
+  const screenWidth = Dimensions.get('window').width;
+  const renglonWidth = screenWidth * 0.4; // 20% del ancho de la pantalla
 
   const currentCurrency = getCurrencyByCode(currency);
 
@@ -53,8 +57,63 @@ export function AmountInput({
   };
 
   const formatCurrency = (text: string) => {
-    const numericValue = text.replace(/[^0-9.]/g, '');
-    return numericValue;
+    // Remover todos los caracteres no numéricos excepto la coma decimal
+    const numericValue = text.replace(/[^0-9,]/g, '');
+    
+    // Si está vacío, devolver vacío
+    if (!numericValue) return '';
+    
+    // Si solo es una coma, devolver vacío
+    if (numericValue === ',') return '';
+    
+    // Separar la parte entera y decimal (usando coma como separador decimal)
+    const parts = numericValue.split(',');
+    const integerPart = parts[0];
+    const decimalPart = parts[1];
+    
+    // Si no hay parte entera, devolver vacío
+    if (!integerPart) return '';
+    
+    // Formatear la parte entera con separadores de miles (formato argentino)
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    // Reconstruir el número
+    if (decimalPart !== undefined) {
+      // Limitar a 2 decimales
+      const limitedDecimal = decimalPart.substring(0, 2);
+      return `${formattedInteger},${limitedDecimal}`;
+    }
+    
+    return formattedInteger;
+  };
+
+  const calculateFontSize = (text: string) => {
+    const baseFontSize = 48;
+    const minFontSize = 16;
+    const maxWidth = renglonWidth;
+    
+    // Si no hay texto, usar el tamaño base
+    if (!text || text === '0') return baseFontSize;
+    
+    // Calcular el tamaño de fuente basado en la longitud del texto
+    const textLength = text.length;
+    
+    // Reducir el tamaño más agresivamente para números largos
+    let fontSize = baseFontSize;
+    
+    if (textLength > 3) {
+      fontSize = baseFontSize - (textLength - 3) * 3;
+    }
+    
+    if (textLength > 6) {
+      fontSize = baseFontSize - (textLength - 3) * 4;
+    }
+    
+    if (textLength > 9) {
+      fontSize = baseFontSize - (textLength - 3) * 5;
+    }
+    
+    return Math.max(minFontSize, Math.min(fontSize, baseFontSize));
   };
 
   const handleCurrencySelect = (newCurrency: string) => {
@@ -65,31 +124,40 @@ export function AmountInput({
 
   return (
     <>
-      <YStack alignItems="center" space="$4" paddingVertical="$4">
+      <YStack alignItems="center" space="$2" paddingVertical="$4">
         {/* Campo de monto con símbolo de moneda */}
-        <XStack alignItems="baseline" justifyContent="center" space="$3">
+        <XStack alignItems="center" justifyContent="center" width="100%">
+          {/* Símbolo de moneda a la izquierda del renglón */}
           <Text
             color="$color"
             fontSize={48}
             fontWeight="300"
             opacity={0.7}
+            style={{
+              position: 'absolute',
+              right: screenWidth / 2 + renglonWidth / 2 + 20, // Posiciona a la izquierda del renglón
+              textAlign: 'right',
+              minWidth: 80, // Ancho mínimo para mantener consistencia
+            }}
           >
             {currentCurrency?.symbol || currency}
           </Text>
+          
+          {/* Input centrado en la pantalla */}
           <Input
             value={value}
             onChangeText={(text) => onChange(formatCurrency(text))}
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder="0"
-            keyboardType="numeric"
-            fontSize={64}
+            keyboardType="decimal-pad"
+            fontSize={calculateFontSize(value)}
             fontWeight="200"
             color="$color"
             backgroundColor="transparent"
             borderWidth={0}
-            textAlign="left"
-            width={200}
+            textAlign="center"
+            width={renglonWidth}
             paddingHorizontal={0}
             focusStyle={{
               borderWidth: 0,
@@ -101,20 +169,20 @@ export function AmountInput({
           />
         </XStack>
 
-        {/* Línea divisoria animada */}
+        {/* Línea divisoria animada - 20% del ancho de pantalla, centrada */}
         <Animated.View
           style={[
             {
-              width: 200,
+              width: renglonWidth,
               height: 1,
               backgroundColor: '#2a2a2a',
-              marginLeft: 60,
+              alignSelf: 'center',
             },
             animatedLineStyle,
           ]}
         />
 
-        {/* Botón selector de moneda */}
+        {/* Botón selector de moneda - centrado */}
         <Button
           onPress={() => setOpen(true)}
           backgroundColor="rgba(255, 255, 255, 0.05)"
