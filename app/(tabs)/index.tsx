@@ -1,12 +1,14 @@
-import { ScrollView, YStack, XStack, Text, Card } from 'tamagui';
+import { ScrollView, YStack, XStack, Text, Card, Button } from 'tamagui';
 import { LinearGradient } from '@tamagui/linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   FadeInDown,
   SlideInLeft,
-  SlideInRight
+  SlideInRight,
+  FadeIn
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 
 // Tipo para datos financieros
 interface BalanceData {
@@ -26,12 +28,23 @@ const formatCurrency = (amount: number): string => {
 };
 
 export default function BalanceScreen() {
+  // Estado para controlar la visibilidad de los valores
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+
   // Datos simulados - en producción vendrían de una API
   const balanceData: BalanceData = {
     netBalance: 15420.50,
     income: 8500.00,
     expenses: 3200.00,
     investment: 1500.00,
+  };
+
+  // Función para formatear valores con asteriscos cuando están ocultos
+  const formatValue = (amount: number): string => {
+    if (isBalanceVisible) {
+      return formatCurrency(amount);
+    }
+    return '$ ••••••';
   };
 
   return (
@@ -56,15 +69,35 @@ export default function BalanceScreen() {
               <YStack space="$4">
                 {/* Balance Neto */}
                 <YStack space="$2">
-                  <XStack alignItems="center" space="$2">
-                    <Ionicons name="wallet" size={20} color="rgba(255,255,255,0.9)" />
-                    <Text fontSize="$4" color="rgba(255,255,255,0.9)" fontWeight="500">
-                      Balance Neto
-                    </Text>
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <XStack alignItems="center" space="$2">
+                      <Ionicons name="wallet" size={20} color="rgba(255,255,255,0.9)" />
+                      <Text fontSize="$4" color="rgba(255,255,255,0.9)" fontWeight="500">
+                        Balance Neto
+                      </Text>
+                    </XStack>
+                    <Button
+                      size="$3"
+                      circular
+                      chromeless
+                      onPress={() => setIsBalanceVisible(!isBalanceVisible)}
+                      icon={
+                        <Ionicons
+                          name={isBalanceVisible ? "eye" : "eye-off"}
+                          size={20}
+                          color="rgba(255,255,255,0.9)"
+                        />
+                      }
+                      accessibilityLabel={isBalanceVisible ? "Ocultar balance" : "Mostrar balance"}
+                      accessibilityRole="button"
+                      aria-pressed={!isBalanceVisible}
+                    />
                   </XStack>
-                  <Text fontSize="$10" fontWeight="bold" color="white">
-                    {formatCurrency(balanceData.netBalance)}
-                  </Text>
+                  <Animated.View entering={FadeIn.duration(200)}>
+                    <Text fontSize="$10" fontWeight="bold" color="white">
+                      {formatValue(balanceData.netBalance)}
+                    </Text>
+                  </Animated.View>
                 </YStack>
 
                 {/* Divisor */}
@@ -81,7 +114,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$5" fontWeight="600" color="white">
-                      {formatCurrency(balanceData.income)}
+                      {formatValue(balanceData.income)}
                     </Text>
                   </YStack>
 
@@ -94,7 +127,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$5" fontWeight="600" color="white">
-                      {formatCurrency(balanceData.expenses)}
+                      {formatValue(balanceData.expenses)}
                     </Text>
                   </YStack>
 
@@ -107,7 +140,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$5" fontWeight="600" color="white">
-                      {formatCurrency(balanceData.investment)}
+                      {formatValue(balanceData.investment)}
                     </Text>
                   </YStack>
                 </XStack>
@@ -142,7 +175,7 @@ export default function BalanceScreen() {
                       Ahorro este mes
                     </Text>
                     <Text fontSize="$4" fontWeight="600" color="#4ade80">
-                      {formatCurrency(balanceData.income - balanceData.expenses)}
+                      {formatValue(balanceData.income - balanceData.expenses)}
                     </Text>
                   </XStack>
                 </YStack>
@@ -171,7 +204,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$4" fontWeight="600" color="#ffffff">
-                      {formatCurrency(1200)}
+                      {formatValue(1200)}
                     </Text>
                   </XStack>
                   <XStack justifyContent="space-between" alignItems="center">
@@ -182,7 +215,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$4" fontWeight="600" color="#ffffff">
-                      {formatCurrency(800)}
+                      {formatValue(800)}
                     </Text>
                   </XStack>
                   <XStack justifyContent="space-between" alignItems="center">
@@ -193,7 +226,7 @@ export default function BalanceScreen() {
                       </Text>
                     </XStack>
                     <Text fontSize="$4" fontWeight="600" color="#ffffff">
-                      {formatCurrency(1200)}
+                      {formatValue(1200)}
                     </Text>
                   </XStack>
                 </YStack>
