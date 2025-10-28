@@ -251,7 +251,7 @@ export function AmountInput({
                         : 'rgba(255, 255, 255, 0.05)'
                     }
                     borderRadius="$4"
-                    paddingVertical="$3"
+                    paddingVertical="$6"
                     paddingHorizontal="$4"
                     borderWidth={1}
                     borderColor={
@@ -264,9 +264,9 @@ export function AmountInput({
                       scale: 0.98,
                     }}
                   >
-                    <XStack alignItems="center" space="$3" width="100%">
+                    <XStack alignItems="center" justifyContent="center" space="$3" width="100%" minHeight={60}>
                       <Text fontSize="$6">{curr.flag}</Text>
-                      <YStack flex={1}>
+                      <YStack flex={1} justifyContent="center">
                         <Text
                           color={currency === curr.code ? 'white' : '$color'}
                           fontSize="$4"
