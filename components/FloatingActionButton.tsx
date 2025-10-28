@@ -3,6 +3,7 @@ import { Pressable } from 'react-native';
 import { YStack, XStack, Text } from 'tamagui';
 import Animated, {
   FadeInUp,
+  FadeOutUp,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -45,10 +46,11 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
     <>
       {/* Opciones del menú - POSICIÓN ABSOLUTA INDEPENDIENTE */}
       {isExpanded && (
-        <YStack position="absolute" bottom="$12" right="$6" zIndex={999}>
+        <YStack position="absolute" bottom="$11" right="$6" zIndex={999}>
           {/* Opción: Ingreso */}
           <Animated.View
             entering={FadeInUp.delay(100).springify().damping(15).stiffness(150)}
+            exiting={FadeOutUp.delay(0)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('income')}>
@@ -76,6 +78,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
           {/* Opción: Inversión */}
           <Animated.View
             entering={FadeInUp.delay(50).springify().damping(15).stiffness(150)}
+            exiting={FadeOutUp.delay(50)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('investment')}>
@@ -103,6 +106,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
           {/* Opción: Gasto */}
           <Animated.View
             entering={FadeInUp.springify().damping(15).stiffness(150)}
+            exiting={FadeOutUp.delay(100)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('expense')}>
@@ -130,7 +134,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
       )}
 
       {/* Botón principal FAB - POSICIÓN ABSOLUTA INDEPENDIENTE Y FIJA */}
-      <YStack position="absolute" bottom="$6" right="$6" zIndex={1000}>
+      <YStack position="absolute" bottom="$4" right="$6" zIndex={1000}>
         <Pressable onPress={toggleFab}>
           <YStack
             backgroundColor="#667eea"
