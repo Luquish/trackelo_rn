@@ -42,6 +42,12 @@ Escanea el código QR con la app de Expo Go en tu dispositivo para ver la aplica
 - **React Native** 0.81.5
 - **TypeScript** - Tipado estático
 - **Expo Router** - Navegación basada en archivos
+- **Tamagui UI** - Componentes universales para web y móvil
+- **React Native Reanimated** - Animaciones de alto rendimiento
+- **React Native Gesture Handler** - Gestos nativos avanzados
+- **TanStack Query** - Manejo de estado del servidor
+- **AsyncStorage** - Almacenamiento local persistente
+- **Expo Vector Icons** - Iconografía completa
 
 ## 📁 Estructura del Proyecto
 
@@ -69,6 +75,42 @@ Esta app usa **Expo Router** con navegación basada en archivos:
 
 ### TypeScript
 El proyecto está configurado con TypeScript. No necesitas importar React en cada archivo gracias a la nueva JSX Transform configurada en `tsconfig.json`.
+
+### Tamagui UI
+La aplicación usa [Tamagui UI](https://tamagui.dev/ui/intro) para componentes universales que funcionan tanto en web como móvil. Incluye:
+- **Layout**: YStack, XStack para diseño flexible
+- **Components**: Card, Button, Input, Switch, etc.
+- **Theming**: Sistema de temas integrado con colores semánticos
+- **Performance**: Optimizado para React Native
+
+### React Native Reanimated
+[React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/) proporciona animaciones de alto rendimiento:
+- **120 FPS**: Ejecuta en UI thread nativo
+- **API declarativa**: `withSpring()`, `withTiming()`, `FadeIn`, `SlideIn`
+- **Layout animations**: Animaciones automáticas de entrada/salida
+- **Worklets**: Código que ejecuta en UI thread
+
+### TanStack Query (React Query)
+[TanStack Query](https://tanstack.com/query/latest) maneja el estado del servidor de forma eficiente:
+- **Caching inteligente**: Datos cacheados automáticamente
+- **Sincronización**: Refetch automático en background
+- **Mutations**: Operaciones de escritura optimizadas
+- **Loading states**: Estados de carga, error y éxito
+- **Offline support**: Funciona sin conexión
+
+### AsyncStorage
+[AsyncStorage](https://react-native-async-storage.github.io/async-storage/) proporciona almacenamiento local persistente:
+- **Persistencia**: Datos guardados entre sesiones
+- **Async/await**: API moderna y fácil de usar
+- **JSON support**: Serialización automática
+- **Cross-platform**: Funciona en iOS y Android
+
+### Expo Vector Icons
+[Expo Vector Icons](https://docs.expo.dev/guides/icons/) incluye múltiples familias de iconos:
+- **Ionicons**: Iconos de iOS y Material Design
+- **MaterialIcons**: Iconos de Google Material Design
+- **FontAwesome**: Iconos populares de FontAwesome
+- **AntDesign**: Iconos del sistema Ant Design
 
 ## 📱 Plataformas Soportadas
 
