@@ -1,206 +1,44 @@
-import { ScrollView, YStack, XStack, Text, Card, Button, Input, Label } from 'tamagui';
+import { ScrollView, YStack, XStack, Text, Button } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
-  FadeInUp,
   BounceIn,
   ZoomIn,
-  RotateInDownLeft,
   FlipInEasyX
 } from 'react-native-reanimated';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
-
-// Función simulada para obtener tareas
-const fetchTasks = async () => {
-  await new Promise(resolve => setTimeout(resolve, 800));
-  return [
-    { id: 1, title: 'Completar diseño UI', completed: false },
-    { id: 2, title: 'Implementar animaciones', completed: true },
-    { id: 3, title: 'Configurar React Query', completed: true },
-    { id: 4, title: 'Agregar gestos', completed: false },
-  ];
-};
-
-// Función simulada para crear nueva tarea
-const createTask = async (title: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return { id: Date.now(), title, completed: false };
-};
+import ScreenHeader from '../../components/layout/ScreenHeader';
+import InfoCard from '../../components/cards/InfoCard';
+import TaskList from '../../components/lists/TaskList';
 
 export default function ExploreScreen() {
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [favorites, setFavorites] = useState<string[]>([]);
-
-  const queryClient = useQueryClient();
-
-  // React Query para obtener tareas
-  const { data: tasks, isLoading: tasksLoading } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
-  });
-
-  // Mutation para crear nueva tarea
-  const createTaskMutation = useMutation({
-    mutationFn: createTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setNewTaskTitle('');
-    },
-  });
-
-  // AsyncStorage para favoritos
-  useEffect(() => {
-    const loadFavorites = async () => {
-      try {
-        const savedFavorites = await AsyncStorage.getItem('trackelo_favorites');
-        if (savedFavorites) {
-          setFavorites(JSON.parse(savedFavorites));
-        }
-      } catch (error) {
-        console.error('Error loading favorites:', error);
-      }
-    };
-    loadFavorites();
-  }, []);
-
-  const toggleFavorite = async (item: string) => {
-    try {
-      const newFavorites = favorites.includes(item)
-        ? favorites.filter(fav => fav !== item)
-        : [...favorites, item];
-      
-      setFavorites(newFavorites);
-      await AsyncStorage.setItem('trackelo_favorites', JSON.stringify(newFavorites));
-    } catch (error) {
-      console.error('Error saving favorites:', error);
-    }
-  };
-
-  const handleCreateTask = () => {
-    if (newTaskTitle.trim()) {
-      createTaskMutation.mutate(newTaskTitle.trim());
-    }
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f0f0f' }} edges={['bottom', 'left', 'right']}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4" space="$4">
-          <YStack alignItems="center" space="$2">
-            <Animated.View entering={FadeInUp.delay(200)}>
-              <Text fontSize="$8" fontWeight="bold" color="#ffffff">
-                Datos
-              </Text>
-            </Animated.View>
-            <Animated.View entering={FadeInUp.delay(400)}>
-              <Text fontSize="$5" color="#a0a0a0">
-                Análisis y estadísticas
-              </Text>
-            </Animated.View>
-          </YStack>
+          
+          <ScreenHeader 
+            title="Datos" 
+            subtitle="Análisis y estadísticas" 
+          />
 
-          <Animated.View entering={BounceIn.delay(600)}>
-            <Card elevate padding="$4" backgroundColor="#1a1a1a" borderColor="#2a2a2a" borderWidth={1}>
-              <YStack space="$3">
-                <XStack alignItems="center" space="$2">
-                  <Ionicons name="bar-chart" size={24} color="#667eea" />
-                  <Text fontSize="$6" fontWeight="600" color="#ffffff">
-                    Estadísticas
-                  </Text>
-                </XStack>
-                <Text fontSize="$4" color="#a0a0a0" lineHeight="$1">
-                  Visualiza el rendimiento de tus finanzas con gráficos y análisis detallados.
-                </Text>
-              </YStack>
-            </Card>
-          </Animated.View>
+          <InfoCard
+            icon="bar-chart"
+            iconColor="#667eea"
+            title="Estadísticas"
+            description="Visualiza el rendimiento de tus finanzas con gráficos y análisis detallados."
+            enteringAnimation={BounceIn}
+            delay={600}
+          />
 
-          <Animated.View entering={ZoomIn.delay(800)}>
-            <Card elevate padding="$4" backgroundColor="#1a1a1a" borderColor="#2a2a2a" borderWidth={1}>
-              <YStack space="$3">
-                <XStack alignItems="center" space="$2">
-                  <Ionicons name="analytics" size={24} color="#764ba2" />
-                  <Text fontSize="$6" fontWeight="600" color="#ffffff">
-                    Análisis Avanzado
-                  </Text>
-                </XStack>
-                <Text fontSize="$4" color="#a0a0a0" lineHeight="$1">
-                  Accede a reportes detallados sobre tus inversiones y movimientos financieros.
-                </Text>
-              </YStack>
-            </Card>
-          </Animated.View>
+          <InfoCard
+            icon="analytics"
+            iconColor="#764ba2"
+            title="Análisis Avanzado"
+            description="Accede a reportes detallados sobre tus inversiones y movimientos financieros."
+            enteringAnimation={ZoomIn}
+            delay={800}
+          />
 
-          {/* Lista de tareas con React Query */}
-          <Animated.View entering={RotateInDownLeft.delay(1000)}>
-            <Card elevate padding="$4" backgroundColor="#1a1a1a" borderColor="#2a2a2a" borderWidth={1}>
-              <YStack space="$3">
-                <XStack alignItems="center" space="$2">
-                  <MaterialIcons name="task-alt" size={24} color="#FF6B35" />
-                  <Text fontSize="$6" fontWeight="600" color="#ffffff">
-                    Lista de Tareas
-                  </Text>
-                </XStack>
-                <Text fontSize="$4" color="#a0a0a0" lineHeight="$1">
-                  Datos obtenidos del servidor con React Query:
-                </Text>
-                {tasksLoading ? (
-                  <Text fontSize="$4" color="#a0a0a0">Cargando tareas...</Text>
-                ) : (
-                  <YStack space="$2">
-                    {tasks?.map((task) => (
-                      <XStack key={task.id} alignItems="center" space="$2">
-                        <Ionicons
-                          name={task.completed ? "checkmark-circle" : "ellipse-outline"}
-                          size={20}
-                          color={task.completed ? "#34C759" : "#8E8E93"}
-                        />
-                        <Text fontSize="$4" color={task.completed ? "#a0a0a0" : "#ffffff"}>
-                          {task.title}
-                        </Text>
-                        <Button 
-                          size="$1" 
-                          onPress={() => toggleFavorite(task.title)}
-                        >
-                          <FontAwesome 
-                            name={favorites.includes(task.title) ? "heart" : "heart-o"} 
-                            size={14} 
-                            color={favorites.includes(task.title) ? "#FF3B30" : "#8E8E93"} 
-                          />
-                        </Button>
-                      </XStack>
-                    ))}
-                  </YStack>
-                )}
-                
-                {/* Crear nueva tarea */}
-                <YStack space="$2">
-                  <Label htmlFor="newTask">Nueva tarea</Label>
-                  <XStack space="$2">
-                    <Input 
-                      id="newTask"
-                      placeholder="Escribe una tarea..."
-                      value={newTaskTitle}
-                      onChangeText={setNewTaskTitle}
-                      flex={1}
-                    />
-                    <Button 
-                      theme="purple" 
-                      size="$3" 
-                      onPress={handleCreateTask}
-                      disabled={createTaskMutation.isPending}
-                    >
-                      <Text color="white" fontWeight="600">
-                        {createTaskMutation.isPending ? "..." : "+"}
-                      </Text>
-                    </Button>
-                  </XStack>
-                </YStack>
-              </YStack>
-            </Card>
-          </Animated.View>
+          <TaskList delay={1000} />
 
           <Animated.View entering={FlipInEasyX.delay(1200)}>
             <XStack space="$3" justifyContent="center" flexWrap="wrap">
