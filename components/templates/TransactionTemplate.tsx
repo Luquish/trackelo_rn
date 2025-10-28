@@ -126,12 +126,11 @@ export function TransactionTemplate({
               backgroundColor="rgba(255, 255, 255, 0.03)"
               borderWidth={0}
               color="$color"
-              fontSize="$3"
+              fontSize="$6"
               paddingHorizontal="$4"
               paddingVertical="$4"
               borderRadius="$8"
               multiline
-              numberOfLines={3}
               focusStyle={{
                 borderWidth: 1,
                 borderColor: 'rgba(255, 255, 255, 0.1)',
