@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Pressable } from 'react-native';
 import { YStack, XStack, Text } from 'tamagui';
 import Animated, {
-  SlideInLeft,
+  FadeInUp,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -48,7 +48,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
         <YStack position="absolute" bottom="$12" right="$6" zIndex={999}>
           {/* Opción: Ingreso */}
           <Animated.View
-            entering={SlideInLeft.delay(100).springify().damping(15).stiffness(150)}
+            entering={FadeInUp.delay(100).springify().damping(15).stiffness(150)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('income')}>
@@ -75,7 +75,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
 
           {/* Opción: Inversión */}
           <Animated.View
-            entering={SlideInLeft.delay(50).springify().damping(15).stiffness(150)}
+            entering={FadeInUp.delay(50).springify().damping(15).stiffness(150)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('investment')}>
@@ -102,7 +102,7 @@ export default function FloatingActionButton({ onActionPress }: FloatingActionBu
 
           {/* Opción: Gasto */}
           <Animated.View
-            entering={SlideInLeft.springify().damping(15).stiffness(150)}
+            entering={FadeInUp.springify().damping(15).stiffness(150)}
             style={{ marginBottom: 12 }}
           >
             <Pressable onPress={() => handleAction('expense')}>
