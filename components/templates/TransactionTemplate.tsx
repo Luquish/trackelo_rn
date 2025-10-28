@@ -159,8 +159,8 @@ export function TransactionTemplate({
                 scale: 0.98,
               }}
             >
-              <XStack alignItems="center" space="$2">
-                <Ionicons name="add" size={24} color="white" />
+              <XStack alignItems="baseline" justifyContent="center" space="$2">
+                <Ionicons name="add" size={18} color="white" />
                 <Text
                   color="white"
                   fontSize="$4"
