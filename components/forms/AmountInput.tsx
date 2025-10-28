@@ -210,7 +210,7 @@ export function AmountInput({
         modal
         open={open}
         onOpenChange={setOpen}
-        snapPoints={[85]}
+        snapPoints={[70]}
         dismissOnSnapToBottom
         zIndex={100000}
         animation="medium"
