@@ -15,6 +15,10 @@ Aplicación móvil desarrollada con Expo Go y React Native.
 ```bash
 # Instalar dependencias
 npm install
+
+# Configurar Supabase (ver SUPABASE_SETUP.md)
+cp .env.example .env
+# Edita .env y agrega tus credenciales de Supabase
 ```
 
 ### Ejecutar la aplicación
@@ -46,6 +50,7 @@ Escanea el código QR con la app de Expo Go en tu dispositivo para ver la aplica
 - **React Native Reanimated** - Animaciones de alto rendimiento
 - **React Native Gesture Handler** - Gestos nativos avanzados
 - **TanStack Query** - Manejo de estado del servidor
+- **Supabase** - Base de datos PostgreSQL y backend en tiempo real
 - **AsyncStorage** - Almacenamiento local persistente
 - **Expo Vector Icons** - Iconografía completa
 
@@ -53,17 +58,40 @@ Escanea el código QR con la app de Expo Go en tu dispositivo para ver la aplica
 
 ```
 trackelo_rn/
-├── app/             # Carpeta principal de la app (Expo Router)
-│   ├── (tabs)/      # Grupo de navegación con tabs
+├── app/                    # Carpeta principal de la app (Expo Router)
+│   ├── (tabs)/            # Grupo de navegación con tabs
 │   │   ├── _layout.tsx    # Layout del navegador de tabs
-│   │   ├── index.tsx      # Pantalla principal
-│   │   └── explore.tsx    # Pantalla de explorar
-│   └── _layout.tsx  # Layout raíz de la aplicación
-├── assets/          # Imágenes, iconos y recursos
-├── node_modules/    # Dependencias
-├── app.json         # Configuración de Expo
-├── tsconfig.json    # Configuración de TypeScript
-└── package.json     # Dependencias y scripts
+│   │   ├── index.tsx      # Pantalla principal (balance)
+│   │   ├── datos.tsx      # Pantalla de datos
+│   │   └── inversiones.tsx # Pantalla de inversiones
+│   ├── add-expense.tsx    # Modal para agregar gastos
+│   ├── add-income.tsx     # Modal para agregar ingresos
+│   ├── add-investment.tsx # Modal para agregar inversiones
+│   └── _layout.tsx        # Layout raíz de la aplicación
+├── components/            # Componentes reutilizables
+│   ├── cards/            # Componentes de tarjetas
+│   ├── forms/            # Componentes de formularios
+│   ├── layout/           # Componentes de layout
+│   ├── lists/            # Componentes de listas
+│   └── templates/        # Templates reutilizables
+├── hooks/                # Custom React hooks
+│   ├── useBalance.ts     # Hook para datos de balance
+│   ├── useCategories.ts  # Hook para categorías
+│   ├── useExpenses.ts    # Hook para gastos/ingresos
+│   ├── useInvestments.ts # Hook para transacciones de inversión
+│   └── useInvestmentAccounts.ts # Hook para cuentas de inversión
+├── supabase/             # Configuración de Supabase
+│   ├── client.ts         # Cliente de Supabase
+│   ├── types.ts          # Tipos TypeScript del schema
+│   └── index.ts          # Exports
+├── assets/               # Imágenes, iconos y recursos
+├── constants/            # Constantes de la aplicación
+├── scripts/              # Scripts de utilidad
+├── .env.example          # Template de variables de entorno
+├── app.json              # Configuración de Expo
+├── tsconfig.json         # Configuración de TypeScript
+├── package.json          # Dependencias y scripts
+└── SUPABASE_SETUP.md     # Guía de configuración de Supabase
 ```
 
 ## 🔧 Desarrollo
@@ -111,6 +139,16 @@ La aplicación usa [Tamagui UI](https://tamagui.dev/ui/intro) para componentes u
 - **MaterialIcons**: Iconos de Google Material Design
 - **FontAwesome**: Iconos populares de FontAwesome
 - **AntDesign**: Iconos del sistema Ant Design
+
+### Supabase
+[Supabase](https://supabase.com/) proporciona backend completo con PostgreSQL:
+- **Database**: PostgreSQL con tipos TypeScript auto-generados
+- **Real-time**: Sincronización automática entre dispositivos
+- **Authentication**: Sistema de autenticación completo (próximamente)
+- **Row Level Security**: Seguridad a nivel de fila
+- **API REST**: API auto-generada desde el schema
+
+Para configurar Supabase, consulta [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
 ## 📱 Plataformas Soportadas
 

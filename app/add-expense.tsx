@@ -1,24 +1,51 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
 import { TransactionTemplate } from '@/components/templates/TransactionTemplate';
 import { Category } from '@/components/forms/CategoryCarousel';
-
-// Categorías para gastos
-const expenseCategories: Category[] = [
-  { id: 'food', name: 'Comida', icon: 'restaurant' },
-  { id: 'transport', name: 'Transporte', icon: 'car' },
-  { id: 'home', name: 'Hogar', icon: 'home' },
-  { id: 'entertainment', name: 'Ocio', icon: 'game-controller' },
-  { id: 'health', name: 'Salud', icon: 'medical' },
-  { id: 'other', name: 'Otro gasto', icon: 'add-circle' },
-];
+import { useCreateExpense } from '../hooks/useExpenses';
+import { useCategories } from '../hooks/useCategories';
 
 export default function AddExpenseScreen() {
+  const router = useRouter();
+  const { mutate: createExpense, isPending } = useCreateExpense();
+  const { data: categoriesData } = useCategories('expense');
+
+  // Map categories from Supabase to the format expected by CategoryCarousel
+  const expenseCategories: Category[] = useMemo(() => {
+    if (!categoriesData) {
+      return [
+        { id: 'temp', name: 'Cargando...', icon: 'add-circle' },
+      ];
+    }
+
+    return categoriesData.map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      icon: 'restaurant', // You can map emojis to icons here
+    }));
+  }, [categoriesData]);
+
   const handleSubmit = (data: { amount: number; category: string; note: string }) => {
-    // TODO: Implementar lógica para guardar el gasto
-    console.log('Guardando gasto:', {
-      ...data,
-      type: 'expense'
-    });
+    createExpense(
+      {
+        amount_minor: Math.round(data.amount * 100), // Convert to cents
+        category_id: data.category,
+        currency_code: 'ARS',
+        kind: 'expense',
+        note: data.note || null,
+        occurred_at: new Date().toISOString(),
+      },
+      {
+        onSuccess: () => {
+          Alert.alert('Éxito', 'Gasto guardado correctamente');
+          router.back();
+        },
+        onError: (error) => {
+          Alert.alert('Error', `No se pudo guardar el gasto: ${error.message}`);
+        },
+      }
+    );
   };
 
   return (
@@ -27,6 +54,7 @@ export default function AddExpenseScreen() {
       currency="ARS"
       categories={expenseCategories}
       onSubmit={handleSubmit}
+      isSubmitting={isPending}
     />
   );
 }

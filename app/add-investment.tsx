@@ -1,22 +1,52 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
 import { TransactionTemplate } from '@/components/templates/TransactionTemplate';
 import { Category } from '@/components/forms/CategoryCarousel';
-
-// Categorías para inversiones
-const investmentCategories: Category[] = [
-  { id: 'broker', name: 'Broker local', icon: 'business' },
-  { id: 'etf', name: 'ETF internacional', icon: 'globe' },
-  { id: 'crypto', name: 'Exchange cripto', icon: 'logo-bitcoin' },
-  { id: 'fund', name: 'Fondo común', icon: 'layers' },
-];
+import { useCreateInvestment } from '../hooks/useInvestments';
+import { useInvestmentAccounts } from '../hooks/useInvestmentAccounts';
 
 export default function AddInvestmentScreen() {
+  const router = useRouter();
+  const { mutate: createInvestment, isPending } = useCreateInvestment();
+  const { data: accountsData } = useInvestmentAccounts();
+
+  // Map investment accounts to categories format
+  const investmentCategories: Category[] = useMemo(() => {
+    if (!accountsData || accountsData.length === 0) {
+      return [
+        { id: 'temp', name: 'Cargando...', icon: 'add-circle' },
+      ];
+    }
+
+    return accountsData.map((account: any) => ({
+      id: account.id,
+      name: account.name,
+      icon: account.type === 'crypto' ? 'logo-bitcoin' :
+        account.type === 'brokerage' ? 'business' :
+          account.type === 'savings' ? 'cash' : 'layers',
+    }));
+  }, [accountsData]);
+
   const handleSubmit = (data: { amount: number; category: string; note: string }) => {
-    // TODO: Implementar lógica para guardar la inversión
-    console.log('Guardando inversión:', {
-      ...data,
-      type: 'investment'
-    });
+    createInvestment(
+      {
+        account_id: data.category, // category here is the account_id
+        amount_minor: Math.round(data.amount * 100), // Convert to cents
+        kind: 'contribution',
+        note: data.note || null,
+        occurred_at: new Date().toISOString(),
+      },
+      {
+        onSuccess: () => {
+          Alert.alert('Éxito', 'Inversión guardada correctamente');
+          router.back();
+        },
+        onError: (error) => {
+          Alert.alert('Error', `No se pudo guardar la inversión: ${error.message}`);
+        },
+      }
+    );
   };
 
   return (
@@ -25,6 +55,7 @@ export default function AddInvestmentScreen() {
       currency="ARS"
       categories={investmentCategories}
       onSubmit={handleSubmit}
+      isSubmitting={isPending}
     />
   );
 }

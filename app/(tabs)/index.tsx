@@ -1,6 +1,6 @@
 import { ScrollView, YStack } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'expo-router';
 import Animated, { SlideInRight } from 'react-native-reanimated';
 import FloatingActionButton from '../../components/FloatingActionButton';
@@ -8,6 +8,9 @@ import BalanceCard from '../../components/cards/BalanceCard';
 import SummaryCard from '../../components/cards/SummaryCard';
 import CategoriesCard from '../../components/cards/CategoriesCard';
 import RecentTransactions, { Transaction } from '../../components/lists/RecentTransactions';
+import { useBalance } from '../../hooks/useBalance';
+import { useExpenses } from '../../hooks/useExpenses';
+import { useCategories } from '../../hooks/useCategories';
 
 // Tipo para datos financieros
 interface BalanceData {
@@ -31,78 +34,69 @@ export default function BalanceScreen() {
   // Estado para controlar la visibilidad de los valores
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
 
-  // Datos simulados - en producción vendrían de una API
-  const balanceData: BalanceData = {
-    netBalance: 15420.50,
-    income: 8500.00,
-    expenses: 3200.00,
-    investment: 1500.00,
-  };
+  // Get current month's date range
+  const { startDate, endDate } = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    return {
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    };
+  }, []);
 
-  // Datos de categorías
-  const categories = [
-    { name: 'Alimentación', icon: 'restaurant' as const, iconColor: '#f59e0b', amount: 1200 },
-    { name: 'Transporte', icon: 'car' as const, iconColor: '#3b82f6', amount: 800 },
-    { name: 'Hogar', icon: 'home' as const, iconColor: '#10b981', amount: 1200 },
-  ];
+  // Fetch data from Supabase
+  const { data: balanceData, isLoading: isBalanceLoading } = useBalance(startDate, endDate);
+  const { data: expensesData, isLoading: isExpensesLoading } = useExpenses(startDate, endDate);
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useCategories('expense');
 
-  // Datos de transacciones recientes (placeholders)
-  const recentTransactions: Transaction[] = [
-    {
-      id: '1',
-      type: 'expense',
-      title: 'Supermercado',
-      amount: 2500,
-      date: 'Hoy, 14:30',
-      category: 'Alimentación',
-      description: 'Compra semanal de alimentos'
-    },
-    {
-      id: '2',
-      type: 'income',
-      title: 'Salario',
-      amount: 8500,
-      date: 'Ayer, 09:00',
-      category: 'Trabajo',
-      description: 'Salario mensual'
-    },
-    {
-      id: '3',
-      type: 'investment',
-      title: 'FCI Money Market',
-      amount: 1500,
-      date: 'Hace 2 días',
-      category: 'Inversión',
-      description: 'Aporte a fondo común'
-    },
-    {
-      id: '4',
-      type: 'expense',
-      title: 'Uber',
-      amount: 800,
-      date: 'Hace 3 días',
-      category: 'Transporte',
-      description: 'Viaje al trabajo'
-    },
-    {
-      id: '5',
-      type: 'expense',
-      title: 'Netflix',
-      amount: 1200,
-      date: 'Hace 5 días',
-      category: 'Entretenimiento',
-      description: 'Suscripción mensual'
-    },
-    {
-      id: '6',
-      type: 'income',
-      title: 'Freelance',
-      amount: 3200,
-      date: 'Hace 1 semana',
-      category: 'Trabajo',
-      description: 'Proyecto de diseño'
-    }
-  ];
+  // Calculate category totals
+  const categories = useMemo(() => {
+    if (!categoriesData || !expensesData) return [];
+
+    const categoryTotals = new Map<string, { name: string; emoji: string | null; amount: number }>();
+
+    expensesData.forEach((expense: any) => {
+      if (expense.kind === 'expense' && expense.category) {
+        const current = categoryTotals.get(expense.category_id) || {
+          name: expense.category.name,
+          emoji: expense.category.emoji,
+          amount: 0,
+        };
+        current.amount += expense.amount_minor / 100;
+        categoryTotals.set(expense.category_id, current);
+      }
+    });
+
+    return Array.from(categoryTotals.values())
+      .map((cat) => ({
+        name: cat.name,
+        icon: 'restaurant' as const, // Default icon
+        iconColor: '#f59e0b',
+        amount: cat.amount,
+      }))
+      .slice(0, 3); // Top 3 categories
+  }, [categoriesData, expensesData]);
+
+  // Format transactions for display
+  const recentTransactions: Transaction[] = useMemo(() => {
+    if (!expensesData) return [];
+
+    return expensesData.slice(0, 6).map((expense: any) => ({
+      id: expense.id,
+      type: expense.kind,
+      title: expense.category?.name || 'Sin categoría',
+      amount: expense.amount_minor / 100,
+      date: new Date(expense.occurred_at).toLocaleString('es-AR', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      category: expense.category?.name || 'Sin categoría',
+      description: expense.note || '',
+    }));
+  }, [expensesData]);
 
   // Función para formatear valores con asteriscos cuando están ocultos
   const formatValue = (amount: number): string => {
@@ -129,21 +123,40 @@ export default function BalanceScreen() {
     }
   };
 
+  // Show loading state
+  if (isBalanceLoading || isExpensesLoading || isCategoriesLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f0f0f' }} edges={['left', 'right']}>
+        <YStack flex={1} alignItems="center" justifyContent="center">
+          {/* You can add a loading spinner here */}
+        </YStack>
+      </SafeAreaView>
+    );
+  }
+
+  // Use default values if data is not loaded
+  const balance: BalanceData = balanceData || {
+    netBalance: 0,
+    income: 0,
+    expenses: 0,
+    investment: 0,
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f0f0f' }} edges={[ 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f0f0f' }} edges={['left', 'right']}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <YStack flex={1} paddingHorizontal="$4" paddingTop="$4" paddingBottom="$4" space="$4">
 
           <BalanceCard
-            balanceData={balanceData}
+            balanceData={balance}
             isBalanceVisible={isBalanceVisible}
             onToggleVisibility={() => setIsBalanceVisible(!isBalanceVisible)}
             formatValue={formatValue}
           />
 
           <SummaryCard
-            totalTransactions={24}
-            monthlySavings={formatValue(balanceData.income - balanceData.expenses)}
+            totalTransactions={recentTransactions.length}
+            monthlySavings={formatValue(balance.income - balance.expenses)}
             formatValue={formatValue}
           />
 
