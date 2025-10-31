@@ -8,6 +8,9 @@ import BalanceCard from '../../components/cards/BalanceCard';
 import SummaryCard from '../../components/cards/SummaryCard';
 import CategoriesCard from '../../components/cards/CategoriesCard';
 import RecentTransactions, { Transaction } from '../../components/lists/RecentTransactions';
+import BalanceLineChart from '../../components/charts/BalanceLineChart';
+import ExpensesDonutChart from '../../components/charts/ExpensesDonutChart';
+import IncomeVsExpensesChart from '../../components/charts/IncomeVsExpensesChart';
 
 // Tipo para datos financieros
 interface BalanceData {
@@ -140,6 +143,12 @@ export default function BalanceScreen() {
             onToggleVisibility={() => setIsBalanceVisible(!isBalanceVisible)}
             formatValue={formatValue}
           />
+
+          <BalanceLineChart />
+
+          <IncomeVsExpensesChart />
+
+          <ExpensesDonutChart />
 
           <SummaryCard
             totalTransactions={24}
